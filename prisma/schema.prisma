@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+
+  isCreatedAt DateTime @default(now())
+  isUpdatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model ChargingStations {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  name            String            @unique
+  position        Float[]
+  chargingSockets ChargingSockets[]
+
+  @@map("charging-stations")
+}
+
+model ChargingSockets {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  ChargingStations   ChargingStations? @relation(fields: [chargingStationsId], references: [id])
+  chargingStationsId String?           @db.ObjectId
+  isOpen             Boolean           @default(true)
+}
